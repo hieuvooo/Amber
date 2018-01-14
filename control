@@ -1,0 +1,8 @@
+Package: com.ps.amber
+Name: Amber
+Depends: mobilesubstrate, firmware (>= 7.0), gsc.still-camera
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Amber-ify your LED torch.
+Author: PoomSmart
+Section: Tweaks
