@@ -13,3 +13,9 @@ Tested Devices
 =========
 
 - iPhone SE (iOS 10.2.1, Saigon-b3 jailbroken)
+
+Why I created this?
+=========
+
+- Solve a long-time amber flashlight mystery
+- For other developers to create something interesting from this finding
