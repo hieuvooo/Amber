@@ -1,6 +1,6 @@
 Package: com.ps.amber
 Name: Amber
-Depends: mobilesubstrate, firmware (>= 7.0), gsc.still-camera
+Depends: mobilesubstrate, firmware (>= 7.0), gsc.still-camera, com.a3tweaks.flipswitch
 Version: 0.0.1
 Architecture: iphoneos-arm
 Description: Amber-ify your LED torch.

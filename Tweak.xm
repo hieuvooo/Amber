@@ -1,4 +1,4 @@
-#import <substrate.h>
+#import "Header.h"
 
 /*
     This tweak (I call it Amber) can tell the camera to use only the amber LED for torch.
@@ -12,10 +12,11 @@ typedef struct H6ISPCaptureDevice *H6ISPCaptureDeviceRef;
 
 int (*SetTorchLevel)(CFNumberRef, H6ISPCaptureStreamRef, H6ISPCaptureDeviceRef);
 int (*SetTorchColor)(CFMutableDictionaryRef, H6ISPCaptureStreamRef, H6ISPCaptureDeviceRef);
+SInt32 (*GetCFPreferenceNumber)(CFStringRef const, CFStringRef const, SInt32);
 
 %hookf(int, SetTorchLevel, CFNumberRef level, H6ISPCaptureStreamRef stream, H6ISPCaptureDeviceRef device) {
     int result = %orig(level, stream, device);
-    if (!result) {
+    if (!result && level && GetCFPreferenceNumber(key, kDomain, 0)) {
         // If torch level setting is successful, we can override the torch color
         CFMutableDictionaryRef dict = CFDictionaryCreateMutable(NULL, 0, &kCFCopyStringDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
         int val = 100; // from 0 (coolest) to 100 (warmest)
@@ -45,5 +46,7 @@ int (*SetTorchColorMode)(void *, unsigned int, unsigned short, unsigned short);
     HBLogDebug(@"SetTorchColorMode found: %d", SetTorchColorMode != NULL);
     SetTorchLevel = (int (*)(CFNumberRef, H6ISPCaptureStreamRef, H6ISPCaptureDeviceRef))MSFindSymbol(h6Ref, "__ZL13SetTorchLevelPKvP18H6ISPCaptureStreamP18H6ISPCaptureDevice");
     HBLogDebug(@"SetTorchLevel found: %d", SetTorchLevel != NULL);
+    GetCFPreferenceNumber = (SInt32 (*)(CFStringRef const, CFStringRef const, SInt32))MSFindSymbol(h6Ref, "__ZN5H6ISP26H6ISPGetCFPreferenceNumberEPK10__CFStringS2_i");
+    HBLogDebug(@"GetCFPreferenceNumber found: %d", GetCFPreferenceNumber != NULL);
     %init;
 }
