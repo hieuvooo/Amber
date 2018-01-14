@@ -23,6 +23,8 @@ int (*SetTorchColor)(CFMutableDictionaryRef, H6ISPCaptureStreamRef, H6ISPCapture
         CFDictionaryAddValue(dict, CFSTR("WarmLEDPercentile"), threshold);
         // Now tell the camera the "fake" scene condition
         SetTorchColor(dict, stream, device);
+        CFRelease(threshold);
+        CFRelease(dict);
     }
     return result;
 }
