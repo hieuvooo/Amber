@@ -7,7 +7,7 @@ Expected Compatible Devices
 =========
 
 - All jailbroken devices with dual-LEDs running iOS 7 and above
-- NOT compatible with Saigon-b2 and lower jailbroken devices
+- MAY NOT compatible with Saigon-b2 (and b1) jailbroken devices (due to killing mediaserverd affecting ziVA exploit)
 
 Tested Devices
 =========
