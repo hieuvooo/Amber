@@ -7,14 +7,14 @@
     When the scene is determined to be the warmest (percentile >= 100), only amber LED will turn on.
 */
 
-typedef struct H6ISPCaptureStream *H6ISPCaptureStreamRef;
-typedef struct H6ISPCaptureDevice *H6ISPCaptureDeviceRef;
+typedef struct HXISPCaptureStream *HXISPCaptureStreamRef;
+typedef struct HXISPCaptureDevice *HXISPCaptureDeviceRef;
 
-int (*SetTorchLevel)(CFNumberRef, H6ISPCaptureStreamRef, H6ISPCaptureDeviceRef);
-int (*SetTorchColor)(CFMutableDictionaryRef, H6ISPCaptureStreamRef, H6ISPCaptureDeviceRef);
+int (*SetTorchLevel)(CFNumberRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef);
+int (*SetTorchColor)(CFMutableDictionaryRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef);
 SInt32 (*GetCFPreferenceNumber)(CFStringRef const, CFStringRef const, SInt32);
 
-%hookf(int, SetTorchLevel, CFNumberRef level, H6ISPCaptureStreamRef stream, H6ISPCaptureDeviceRef device) {
+%hookf(int, SetTorchLevel, CFNumberRef level, HXISPCaptureStreamRef stream, HXISPCaptureDeviceRef device) {
     int result = %orig(level, stream, device);
     if (!result && level && GetCFPreferenceNumber(key, kDomain, 0)) {
         // If torch level setting is successful, we can override the torch color
@@ -38,15 +38,37 @@ int (*SetTorchColorMode)(void *, unsigned int, unsigned short, unsigned short);
 }
 
 %ctor {
+    dlopen("/System/Library/MediaCapture/H10ISP.mediacapture", RTLD_LAZY);
+    dlopen("/System/Library/MediaCapture/H9ISP.mediacapture", RTLD_LAZY);
     dlopen("/System/Library/MediaCapture/H6ISP.mediacapture", RTLD_LAZY);
-    MSImageRef h6Ref = MSGetImageByName("/System/Library/MediaCapture/H6ISP.mediacapture");
-    SetTorchColor = (int (*)(CFMutableDictionaryRef, H6ISPCaptureStreamRef, H6ISPCaptureDeviceRef))MSFindSymbol(h6Ref, "__ZL13SetTorchColorPKvP18H6ISPCaptureStreamP18H6ISPCaptureDevice");
+    MSImageRef hxRef = MSGetImageByName("/System/Library/MediaCapture/H10ISP.mediacapture");
+    if (hxRef == NULL)
+        hxRef = MSGetImageByName("/System/Library/MediaCapture/H9ISP.mediacapture");
+    if (hxRef == NULL)
+        hxRef = MSGetImageByName("/System/Library/MediaCapture/H6ISP.mediacapture");
+    SetTorchColor = (int (*)(CFMutableDictionaryRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchColorPKvP18H10ISPCaptureStreamP18H10ISPCaptureDevice");
+    if (SetTorchColor == NULL)
+        SetTorchColor = (int (*)(CFMutableDictionaryRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchColorPKvP18H9ISPCaptureStreamP18H9ISPCaptureDevice");
+    if (SetTorchColor == NULL)
+        SetTorchColor = (int (*)(CFMutableDictionaryRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchColorPKvP18H6ISPCaptureStreamP18H6ISPCaptureDevice");
     HBLogDebug(@"SetTorchColor found: %d", SetTorchColor != NULL);
-    SetTorchColorMode = (int (*)(void *, unsigned int, unsigned short, unsigned short))MSFindSymbol(h6Ref, "__ZN5H6ISP11H6ISPDevice17SetTorchColorModeEjtt");
+    SetTorchColorMode = (int (*)(void *, unsigned int, unsigned short, unsigned short))MSFindSymbol(hxRef, "__ZN5H10ISP11H10ISPDevice17SetTorchColorModeEjtt");
+    if (SetTorchColorMode == NULL)
+        SetTorchColorMode = (int (*)(void *, unsigned int, unsigned short, unsigned short))MSFindSymbol(hxRef, "__ZN5H9ISP11H9ISPDevice17SetTorchColorModeEjtt");
+    if (SetTorchColorMode == NULL)
+        SetTorchColorMode = (int (*)(void *, unsigned int, unsigned short, unsigned short))MSFindSymbol(hxRef, "__ZN5H6ISP11H6ISPDevice17SetTorchColorModeEjtt");
     HBLogDebug(@"SetTorchColorMode found: %d", SetTorchColorMode != NULL);
-    SetTorchLevel = (int (*)(CFNumberRef, H6ISPCaptureStreamRef, H6ISPCaptureDeviceRef))MSFindSymbol(h6Ref, "__ZL13SetTorchLevelPKvP18H6ISPCaptureStreamP18H6ISPCaptureDevice");
+    SetTorchLevel = (int (*)(CFNumberRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchLevelPKvP18H10ISPCaptureStreamP18H10ISPCaptureDevice");
+    if (SetTorchLevel == NULL)
+        SetTorchLevel = (int (*)(CFNumberRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchLevelPKvP18H9ISPCaptureStreamP18H9ISPCaptureDevice");
+    if (SetTorchLevel == NULL)
+        SetTorchLevel = (int (*)(CFNumberRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchLevelPKvP18H6ISPCaptureStreamP18H6ISPCaptureDevice");
     HBLogDebug(@"SetTorchLevel found: %d", SetTorchLevel != NULL);
-    GetCFPreferenceNumber = (SInt32 (*)(CFStringRef const, CFStringRef const, SInt32))MSFindSymbol(h6Ref, "__ZN5H6ISP26H6ISPGetCFPreferenceNumberEPK10__CFStringS2_i");
+    GetCFPreferenceNumber = (SInt32 (*)(CFStringRef const, CFStringRef const, SInt32))MSFindSymbol(hxRef, "__ZN5H10ISP26H10ISPGetCFPreferenceNumberEPK10__CFStringS2_i");
+    if (GetCFPreferenceNumber == NULL)
+        GetCFPreferenceNumber = (SInt32 (*)(CFStringRef const, CFStringRef const, SInt32))MSFindSymbol(hxRef, "__ZN5H9ISP26H9ISPGetCFPreferenceNumberEPK10__CFStringS2_i");
+    if (GetCFPreferenceNumber == NULL)
+        GetCFPreferenceNumber = (SInt32 (*)(CFStringRef const, CFStringRef const, SInt32))MSFindSymbol(hxRef, "__ZN5H6ISP26H6ISPGetCFPreferenceNumberEPK10__CFStringS2_i");
     HBLogDebug(@"GetCFPreferenceNumber found: %d", GetCFPreferenceNumber != NULL);
     %init;
 }
