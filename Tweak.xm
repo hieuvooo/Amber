@@ -58,7 +58,7 @@ int (*SetTorchColorMode)(void *, unsigned int, unsigned short, unsigned short);
     if (SetTorchColorMode == NULL)
         SetTorchColorMode = (int (*)(void *, unsigned int, unsigned short, unsigned short))MSFindSymbol(hxRef, "__ZN5H6ISP11H6ISPDevice17SetTorchColorModeEjtt");
     HBLogDebug(@"SetTorchColorMode found: %d", SetTorchColorMode != NULL);
-    SetTorchLevel = (int (*)(CFNumberRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchLevelPKvP18H10ISPCaptureStreamP18H10ISPCaptureDevice");
+    SetTorchLevel = (int (*)(CFNumberRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchLevelPKvP19H10ISPCaptureStreamP19H10ISPCaptureDevice");
     if (SetTorchLevel == NULL)
         SetTorchLevel = (int (*)(CFNumberRef, HXISPCaptureStreamRef, HXISPCaptureDeviceRef))MSFindSymbol(hxRef, "__ZL13SetTorchLevelPKvP18H9ISPCaptureStreamP18H9ISPCaptureDevice");
     if (SetTorchLevel == NULL)
