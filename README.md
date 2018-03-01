@@ -6,13 +6,7 @@ Amber-ify your LED torch.
 Expected Compatible Devices
 =========
 
-- All jailbroken devices with dual-LEDs running iOS 7 and above
-- MAY NOT compatible with Saigon-b2 (and b1) jailbroken devices (due to killing mediaserverd affecting ziVA exploit)
-
-Tested Devices
-=========
-
-- iPhone SE (iOS 10.2.1, Saigon-b3 jailbroken)
+- All jailbroken devices with multiple LEDs running iOS 7 and above
 
 Why I created this?
 =========
